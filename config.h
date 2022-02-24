@@ -1,0 +1,3 @@
+#ifndef MAX_CHILDREN
+#define MAX_CHILDREN 19
+#endif // MAX_CHILDREN
