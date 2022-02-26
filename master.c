@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <getopt.h> //for getopt variables (e.g. opterr, optopt, etc.)
 #include <unistd.h>
+#include <string.h>
 #include "config.h"
 #include "sharedMemory.h"
 
@@ -65,10 +66,28 @@ int main(int argc, char *argv[])
     }
   }
 
-  if (fork() == 0)
+  int i;
+  for (i = 1; i < numOfProcs; i++)
   {
-    break;
+    if (fork() != 0)
+    {
+      char processNo[3];
+      sprintf(processNo, "%d", i);
+      execl("./slave", "./slave", processNo, NULL);
+    }
   }
+
+  // printf("I am the master\n");
+
+  char *sharedMem = attachMem(FILENAME, MEM_SIZE);
+  if (sharedMem == NULL)
+  {
+    exit(1);
+  }
+
+  strncpy(sharedMem, "test", MEM_SIZE);
+
+  detachMem(sharedMem);
 
   return 0;
 }

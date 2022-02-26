@@ -1,3 +1,5 @@
 .vscode/**/*
 master
 slave
+*.o
+logfile.*
