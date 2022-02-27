@@ -1,3 +1,9 @@
+/**
+ * @file slave.c
+ * @author Wolfe Weeks
+ * @date 2022-02-27
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -6,15 +12,15 @@
 #include "config.h"
 #include "sharedMemory.h"
 
-/**
- * @brief wait until process' turn (using bakery algorithm)
- *        to enter a critical section
- *
- * @param processNo the number of this process
- * @param numOfProcs the total number of processes
- * @param logfile the logfile for this process to write to
- * @return ** int the ticket number the process recieved
- */
+ /**
+  * @brief wait until process' turn (using bakery algorithm)
+  *        to enter a critical section
+  *
+  * @param processNo the number of this process
+  * @param numOfProcs the total number of processes
+  * @param logfile the logfile for this process to write to
+  * @return ** int the ticket number the process recieved
+  */
 int lock(int processNo, int numOfProcs, FILE* logfile) {
   //attach shared memory for choosing booleans and ticket numbers
   int* choosing = attachMem(CHOOSING, MEM_SIZE);

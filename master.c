@@ -1,3 +1,9 @@
+/**
+ * @file master.c
+ * @author Wolfe Weeks
+ * @date 2022-02-27
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h> //for getopt variables (e.g. opterr, optopt, etc.)
@@ -29,7 +35,7 @@ int main(int argc, char* argv[]) {
     options = getopt(argc, argv, "ht:");
     switch (options) {
     case 'h':
-      printf("usage: master -t maxSeconds numOfProcs\n");
+      printf("usage: master [-t maxSeconds] numOfProcs\n");
       return 0;
     case 't':
       maxTime = atoi(optarg);
@@ -47,7 +53,7 @@ int main(int argc, char* argv[]) {
 
   if (argc < 2 || argc > 4) // ensure proper number of args
   {
-    fprintf(stderr, "usage: master -t maxSeconds numOfProcs\n");
+    fprintf(stderr, "usage: master [-t maxSeconds] numOfProcs\n");
     exit(1);
   }
 
