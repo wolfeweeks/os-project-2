@@ -64,6 +64,10 @@ int main(int argc, char* argv[]) {
     exit(1);
   }
 
+  FILE* file = NULL;
+  file = fopen("cstest", "w");
+  fclose(file);
+
   int i;
   for (i = 0; i < numOfProcs; i++) {
     choosing[i] = 0;
@@ -72,25 +76,30 @@ int main(int argc, char* argv[]) {
 
 
   pid_t childPid = 0;
+  int status = 0;
 
   for (i = 0; i < numOfProcs; i++) {
-    if (childPid = fork() != 0) {
+    if (childPid = fork() == 0) {
       char processNo[3];
       sprintf(processNo, "%d", i);
       char numOfProcsString[3];
       sprintf(numOfProcsString, "%d", numOfProcs);
 
       execl("./slave", "./slave", processNo, numOfProcsString, NULL);
-      while (wait(NULL) > 0);
     } else if (childPid == -1) {
       break;
     }
   }
 
+  while (wait(&status) > 0);
+  // printf("\n%d\n", *cstest);
+
   detachMem(choosing);
   detachMem(ticket);
+  // detachMem(cstest);
   destroyMem(CHOOSING);
   destroyMem(TICKET);
+  // destroyMem(CSTEST);
 
   return 0;
 }

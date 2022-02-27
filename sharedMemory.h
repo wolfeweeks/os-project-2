@@ -12,5 +12,6 @@ bool destroyMem(char* fileName);
 #define MEM_SIZE 4096
 #define CHOOSING "./master"
 #define TICKET "./slave"
+#define CSTEST "./cstest"
 
 #endif // !SHARED_MEMORY_H
