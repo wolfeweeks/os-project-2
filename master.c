@@ -55,15 +55,19 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  int* sharedMem = attachMem(FILENAME, MEM_SIZE);
-  if (sharedMem == NULL) {
+  int* choosing = attachMem(CHOOSING, MEM_SIZE);
+  if (choosing == NULL) {
+    exit(1);
+  }
+  int* ticket = attachMem(TICKET, MEM_SIZE);
+  if (ticket == NULL) {
     exit(1);
   }
 
   int i;
   for (i = 0; i < numOfProcs; i++) {
-    sharedMem[i] = 0;
-    sharedMem[i + numOfProcs] = 0;
+    choosing[i] = 0;
+    ticket[i] = 0;
   }
 
 
@@ -83,9 +87,10 @@ int main(int argc, char* argv[]) {
     }
   }
 
-
-  detachMem(sharedMem);
-  destroyMem(FILENAME);
+  detachMem(choosing);
+  detachMem(ticket);
+  destroyMem(CHOOSING);
+  destroyMem(TICKET);
 
   return 0;
 }

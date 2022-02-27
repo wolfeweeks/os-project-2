@@ -5,8 +5,12 @@
 #include "sharedMemory.h"
 
 void lock(int processNo, int numOfProcs) {
-  int* sharedMem = attachMem(FILENAME, MEM_SIZE);
-  if (sharedMem == NULL) {
+  int* choosing = attachMem(CHOOSING, MEM_SIZE);
+  if (choosing == NULL) {
+    exit(1);
+  }
+  int* ticket = attachMem(TICKET, MEM_SIZE);
+  if (ticket == NULL) {
     exit(1);
   }
 
@@ -21,31 +25,29 @@ void lock(int processNo, int numOfProcs) {
   //replace with logfile write
   printf("%s Process %d attempting to enter critical section\n", formattedTime, processNo + 1);
 
-  sharedMem[processNo] = 1; //set choosing to true
+  choosing[processNo] = 1; //set choosing to true
   int maxTicket = 0;
   int i;
   for (i = 0; i < numOfProcs; i++) {
-    if (sharedMem[i + numOfProcs] > maxTicket) {
-      maxTicket = sharedMem[i + numOfProcs];
+    if (ticket[i] > maxTicket) {
+      maxTicket = ticket[i];
     }
   }
-  sharedMem[processNo + numOfProcs] = maxTicket + 1;
-  sharedMem[processNo] = 0; //set choosing to false
+  ticket[i] = maxTicket + 1;
+  choosing[processNo] = 0; //set choosing to false
 
   for (i = 0; i < numOfProcs; i++) {
-    int ticketNo = i + numOfProcs;
-    while (sharedMem[i] == 1);
-    while (sharedMem[ticketNo] != 0 && (sharedMem[ticketNo] <
-      sharedMem[processNo + numOfProcs] || (sharedMem[ticketNo] ==
-        sharedMem[processNo + numOfProcs] && i < processNo)));
+    while (choosing[i] == 1);
+    while (ticket[i] != 0 && (ticket[i] < ticket[processNo] || (ticket[i] == ticket[processNo] && i < processNo)));
   }
 
-  detachMem(sharedMem);
+  detachMem(choosing);
+  detachMem(ticket);
 }
 
 void unlock(int processNo, int numOfProcs) {
-  int* sharedMem = attachMem(FILENAME, MEM_SIZE);
-  if (sharedMem == NULL) {
+  int* ticket = attachMem(TICKET, MEM_SIZE);
+  if (ticket == NULL) {
     exit(1);
   }
 
@@ -60,16 +62,12 @@ void unlock(int processNo, int numOfProcs) {
   //replace with logfile write
   printf("%s Process %d leaving critical section\n\n", formattedTime, processNo + 1);
 
-  sharedMem[processNo + numOfProcs] = 0;
+  ticket[processNo] = 0;
 
-  detachMem(sharedMem);
+  detachMem(ticket);
 }
 
 int main(int argc, char* argv[]) {
-  // int* sharedMem = attachMem(FILENAME, MEM_SIZE);
-  // if (sharedMem == NULL) {
-  //   exit(1);
-  // }
   int processNo = atoi(argv[1]);
 
   lock(processNo, atoi(argv[2]));
@@ -87,7 +85,8 @@ int main(int argc, char* argv[]) {
   // printf("%s Queue %d File modified by process number %s\n", formattedTime, sharedMem[processNo - 1], argv[1]);
 
   // detachMem(sharedMem);
-  destroyMem(FILENAME);
+  destroyMem(CHOOSING);
+  destroyMem(TICKET);
 
   return 0;
 }
