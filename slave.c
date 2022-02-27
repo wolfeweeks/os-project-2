@@ -98,6 +98,16 @@ void unlock(int processNo, FILE* logfile) {
   detachMem(ticket); //detach shared memory
 }
 
+/**
+ * @brief returns a random number between 0 and 5 (inclusive)
+ *
+ * @return ** int
+ */
+int randomSleepTime() {
+  srand(time(0));
+  return rand() % (6);
+}
+
 int main(int argc, char* argv[]) {
   int processNo = atoi(argv[1]); //convert this process' number to integer
 
@@ -113,7 +123,7 @@ int main(int argc, char* argv[]) {
 
   int ticketNo = lock(processNo, atoi(argv[2]), logfile);
   //critical section************************************************************
-  sleep(2);
+  sleep(randomSleepTime());
 
   //get time and format it according to HH:MM:SS
   struct tm* timeInfo;
@@ -130,7 +140,7 @@ int main(int argc, char* argv[]) {
     formattedTime, ticketNo, processNo);
   fclose(file);
 
-  sleep(2);
+  sleep(randomSleepTime());
   //critical section************************************************************
   unlock(processNo, logfile);
 

@@ -4,10 +4,21 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <time.h>
 #include "config.h"
 #include "sharedMemory.h"
 
+void handleInterrupt(int sig) {
+  destroyMem(CHOOSING);
+  destroyMem(TICKET);
+  kill(0, SIGKILL);
+  exit(1);
+}
+
 int main(int argc, char* argv[]) {
+  signal(SIGALRM, handleInterrupt);
+  signal(SIGINT, handleInterrupt);
+
   int numOfProcs;
   int maxTime = 100;
 
@@ -64,16 +75,20 @@ int main(int argc, char* argv[]) {
     exit(1);
   }
 
-  FILE* file = NULL;
-  file = fopen("cstest", "w");
-  fclose(file);
-
   int i;
   for (i = 0; i < numOfProcs; i++) {
     choosing[i] = 0;
     ticket[i] = 0;
   }
 
+  detachMem(choosing);
+  detachMem(ticket);
+
+  alarm(maxTime);
+
+  FILE* file = NULL;
+  file = fopen("cstest", "w");
+  fclose(file);
 
   pid_t childPid = 0;
   int status = 0;
@@ -92,14 +107,11 @@ int main(int argc, char* argv[]) {
   }
 
   while (wait(&status) > 0);
-  // printf("\n%d\n", *cstest);
 
   detachMem(choosing);
   detachMem(ticket);
-  // detachMem(cstest);
   destroyMem(CHOOSING);
   destroyMem(TICKET);
-  // destroyMem(CSTEST);
 
   return 0;
 }
